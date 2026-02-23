@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>eCFR Redirector</title>
+	<style>
+		:root {
+			background-color: #ffffff;
+			color: #000000;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			:root {
+				background-color: #000000;
+				color: #ffffff;
+			}
+		}
+
+		body {
+			font-family: Helvetica, Arial, sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+		}
+	</style>
+	<script>
+		function redirect() {
+			let search = window.location.search.substring(1);
+			if (!search) {
+				document.body.innerHTML = "Usage: ?61.51(g)";
+				return;
+			}
+
+			let params = search.split("&");
+			let debugMode = false;
+			let query = "";
+
+			for (let p of params) {
+				let decoded = decodeURIComponent(p).trim();
+				if (decoded.toLowerCase() === "debug") {
+					debugMode = true;
+				} else if (query === "" && p.trim() !== "") {
+					query = decoded;
+				}
+			}
+
+			if (!query) {
+				document.body.innerHTML = "Usage: ?61.51(g)";
+				return;
+			}
+
+			// Remove leading "cfr" if present
+			query = query.replace(/^cfr\s+/i, "");
+
+			let title = 14; // default
+			let part, section, paragraph = "";
+
+			// Detect explicit title like "49 CFR 821.1" or "12 1.1"
+			let explicitTitleMatch = query.match(/^(\d+)\s*(?:cfr\s+|\s+)/i);
+			if (explicitTitleMatch) {
+				title = explicitTitleMatch[1];
+				query = query.replace(/^(\d+)\s*(?:cfr\s+|\s+)/i, "");
+			}
+
+			// Extract paragraph e.g. (g)(2)
+			let paragraphMatch = query.match(/(\(.*\))$/);
+			if (paragraphMatch) {
+				paragraph = paragraphMatch[1];
+				query = query.replace(/(\(.*\))$/, "");
+			}
+
+			// Extract part + section
+			let parts = query.split(".");
+			part = parts[0];
+			section = parts[1];
+
+			if (!part || !section) {
+				document.body.innerHTML = "Invalid CFR format.";
+				return;
+			}
+
+			let url = `https://www.ecfr.gov/current/title-${title}/part-${part}/section-${part}.${section}`;
+
+			if (paragraph) {
+				url += `#p-${part}.${section}${paragraph}`;
+			}
+
+			if (debugMode) {
+				document.body.innerHTML = `
+					<p>Target URL: <a href="${url}">${url}</a></p>
+				`;
+			} else {
+				window.location.replace(url);
+			}
+		}
+	</script>
+</head>
+
+<body onload="redirect()">
+	Redirecting...
+</body>
+
+</html>
