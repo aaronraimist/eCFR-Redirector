@@ -93,6 +93,20 @@ test('full part - explicit 14 CFR title without CFR', () => {
   );
 });
 
+test('explicit title with CFR keyword using + encoding', () => {
+  expectUrl(
+    '?14+CFR+129.1',
+    'https://www.ecfr.gov/current/title-14/part-129/section-129.1'
+  );
+});
+
+test('explicit title with CFR keyword using %2B encoding', () => {
+  expectUrl(
+    '?14%2BCFR%2B129.1',
+    'https://www.ecfr.gov/current/title-14/part-129/section-129.1'
+  );
+});
+
 test('debug mode', () => {
   const result = buildTargetUrlFromSearch('?61.51&debug');
   assert.equal(result.debugMode, true);

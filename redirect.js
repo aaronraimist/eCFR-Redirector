@@ -15,7 +15,9 @@
     let query = "";
 
     for (const p of params) {
-      const decoded = decodeURIComponent(p).trim();
+      const decoded = decodeURIComponent(p)
+        .replace(/\+/g, " ")
+        .trim();
       if (decoded.toLowerCase() === "debug") {
         debugMode = true;
       } else if (query === "" && p.trim() !== "") {
