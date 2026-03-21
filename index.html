@@ -77,14 +77,18 @@
 			part = parts[0];
 			section = parts[1];
 
-			if (!part || !section) {
+			if (!part) {
 				document.body.innerHTML = "Invalid CFR format.";
 				return;
 			}
 
-			let url = `https://www.ecfr.gov/current/title-${title}/part-${part}/section-${part}.${section}`;
+			let url = `https://www.ecfr.gov/current/title-${title}/part-${part}`;
 
-			if (paragraph) {
+			if (section) {
+				url += `/section-${part}.${section}`;
+			}
+
+			if (paragraph && section) {
 				url += `#p-${part}.${section}${paragraph}`;
 			}
 
